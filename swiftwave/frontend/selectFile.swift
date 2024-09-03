@@ -1,14 +1,7 @@
-//
-//  selectFile.swift
-//  swiftwave
-//
-//  Created by Gary Mejia on 9/2/24.
-//
-
 import SwiftUI
 
 struct SelectFileView: View {
-    @State private var files: [String] = []
+    @State private var files: [FileInfo] = []
 
     var body: some View {
         GeometryReader { geometry in
@@ -18,9 +11,11 @@ struct SelectFileView: View {
                     .padding()
 
                 List(files, id: \.self) { file in
-                    Text(file)
+                    Text(file.name)
+                        .foregroundColor(file.isDir ? .blue : .white)
                 }
                 .frame(height: geometry.size.height)
+                .background(Color.black)
             }
             .onAppear(perform: loadFiles)
         }
@@ -28,8 +23,7 @@ struct SelectFileView: View {
     func loadFiles() {
           if let allFileItems = list_of_files() {
               files = allFileItems
-              files.sort()
-              print(files)
+              files = files.sorted { $0.name.localizedCompare($1.name) == .orderedAscending }
           } else {
               print("Failed to retrieve files.")
           }

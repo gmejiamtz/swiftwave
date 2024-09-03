@@ -1,10 +1,3 @@
-//
-//  swiftwaveUITests.swift
-//  swiftwaveUITests
-//
-//  Created by Gary Mejia on 9/2/24.
-//
-
 import XCTest
 
 final class swiftwaveUITests: XCTestCase {

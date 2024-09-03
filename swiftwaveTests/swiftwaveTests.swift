@@ -1,10 +1,3 @@
-//
-//  swiftwaveTests.swift
-//  swiftwaveTests
-//
-//  Created by Gary Mejia on 9/2/24.
-//
-
 import XCTest
 @testable import swiftwave
 
