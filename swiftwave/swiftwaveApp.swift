@@ -11,7 +11,7 @@ import SwiftUI
 struct swiftwaveApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SelectFileView()
         }
     }
 }
