@@ -3,32 +3,41 @@ import Foundation
 struct FileInfo: Identifiable, Hashable {
     let name: String
     let isDir: Bool
+    let isSymlink: Bool
+    let isSymlinkToDir: Bool
     let id = UUID()
 }
 
-func list_of_files() -> [FileInfo]? {
-    var files: [FileInfo] = []
+func list_of_files(at path: String) -> [FileInfo]? {
+    var fileInfos: [FileInfo] = []
     let fileManager = FileManager.default
-    //later include non home directory launches
-    let current_user = NSUserName()
-    let pwd = fileManager.homeDirectory(forUser: current_user)?.path(percentEncoded: false) ?? ""
+    
     do {
-        let items = try fileManager.contentsOfDirectory(atPath: pwd)
+        let items = try fileManager.contentsOfDirectory(atPath: path)
         for item in items {
-            if !item.hasPrefix(".") {
-                //print("check path: ", pwd +  item)
-                let file_attr = try fileManager.attributesOfItem(atPath: pwd  + item)
-                let file_type = file_attr[FileAttributeKey.type] ?? nil
-                let is_dir = file_type as! String == "NSFileTypeDirectory"
-                let is_reg = file_type as! String == "NSFileTypeRegular"
-                if is_dir || is_reg {
-                    files.append(FileInfo(name: item, isDir: is_dir))
+            // Skip hidden files (those starting with a dot)
+            if item.hasPrefix(".") { continue }
+            
+            let fullPath = (path as NSString).appendingPathComponent(item)
+            var isDir: ObjCBool = false
+            let isSymlink = (try? fileManager.destinationOfSymbolicLink(atPath: fullPath)) != nil
+
+            if fileManager.fileExists(atPath: fullPath, isDirectory: &isDir) {
+                var isSymlinkToDir = false
+                if isSymlink {
+                    var destinationIsDir: ObjCBool = false
+                    let destinationPath = try? fileManager.destinationOfSymbolicLink(atPath: fullPath)
+                    if let destinationPath = destinationPath, fileManager.fileExists(atPath: destinationPath, isDirectory: &destinationIsDir) {
+                        isSymlinkToDir = destinationIsDir.boolValue
+                    }
                 }
+
+                fileInfos.append(FileInfo(name: item, isDir: isDir.boolValue, isSymlink: isSymlink, isSymlinkToDir: isSymlinkToDir))
             }
         }
     } catch {
-        print("backend/files.swift:list_of_files() failed!")
+        print("Error while enumerating files: \(error.localizedDescription)")
         return nil
     }
-    return files
+    return fileInfos
 }
