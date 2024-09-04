@@ -3,8 +3,10 @@ import SwiftUI
 struct SelectFileView: View {
     @State private var files: [FileInfo] = []
     @State private var currentDirectory: String = NSHomeDirectory()
+    @State private var selectedFile: FileInfo?
 
     var body: some View {
+        NavigationStack {
             VStack {
                 Text("Welcome to swiftwave! Select .vcd file")
                     .font(.largeTitle)
@@ -21,16 +23,19 @@ struct SelectFileView: View {
                     
                     // Displaying the files and directories
                     ForEach(files, id: \.self) { file in
-                        Text(file.name)
-                            .foregroundColor(file.isDir ? .blue : .white)
-                            .onTapGesture {
-                                handleFileSelection(file)
+                        NavigationLink(
+                            destination: destinationView(for: file),
+                            label: {
+                                Text(file.name)
+                                    .foregroundColor(file.isDir ? .blue : .white)
                             }
+                        )
                     }
                 }
                 .background(Color.black)
             }
             .onAppear(perform: loadFiles)
+        }
     }
 
     func loadFiles() {
@@ -42,8 +47,6 @@ struct SelectFileView: View {
         if file.isDir {
             currentDirectory = (currentDirectory as NSString).appendingPathComponent(file.name)
             loadFiles()
-        } else {
-            navigateToWaveformView()
         }
     }
 
@@ -53,8 +56,12 @@ struct SelectFileView: View {
         loadFiles()
     }
 
-    func navigateToWaveformView() {
-        // Handle the navigation to the waveform view
-        print("Navigating to waveform view")
+    @ViewBuilder
+    func destinationView(for file: FileInfo) -> some View {
+        if file.isDir {
+            SelectFileView() // Navigate to the same view but with the new directory
+        } else {
+            WaveformMainView() // Navigate to the waveform_main view
+        }
     }
 }
