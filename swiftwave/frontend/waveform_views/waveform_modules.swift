@@ -9,7 +9,7 @@ import SwiftUI
 
 struct waveform_modules: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("On Top should be Scopes View and Bottom Selectable Variables")
     }
 }
 

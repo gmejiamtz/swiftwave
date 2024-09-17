@@ -41,3 +41,17 @@ func list_of_files(at path: String) -> [FileInfo]? {
     }
     return fileInfos
 }
+
+func read_file(path: String) -> String? {
+    do {
+        let data = try Data(contentsOf: URL(string: "file://" + path)!)
+        if let string = String(data: data, encoding: .utf8) {
+            print("File contents: \(string)")
+            return string
+        }
+    } catch {
+        print("Error reading file: \(error)")
+        return nil
+    }
+    return nil
+}

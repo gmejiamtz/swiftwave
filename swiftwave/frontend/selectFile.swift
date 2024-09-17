@@ -29,7 +29,7 @@ struct SelectFileView: View {
                                 Text(file.name)
                                     .foregroundColor(file.isDir ? .blue : .white)
                             }
-                        )
+                        ).navigationBarBackButtonHidden(true)
                     }
                 }
                 .background(Color.black)
@@ -61,7 +61,13 @@ struct SelectFileView: View {
         if file.isDir {
             SelectFileView() // Navigate to the same view but with the new directory
         } else {
-            WaveformMainView() // Navigate to the waveform_main view
+            WaveformMainView(file_path: (currentDirectory as NSString).appendingPathComponent(file.name), file_name: file.name) // Navigate to the waveform_main view
         }
+    }
+}
+
+struct selectViewPreview: PreviewProvider {
+    static var previews: some View {
+        SelectFileView()
     }
 }
